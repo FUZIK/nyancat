@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">My Cat</string>
+    <string name="nyashes">няшность %1$s</string>
 </resources>

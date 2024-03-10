@@ -2,24 +2,16 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
-
 android {
     namespace = "com.example.mycat"
     compileSdk = 34
-
     defaultConfig {
-        applicationId = "com.example.mycat"
+        applicationId = "nyancat.spb.ru"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        versionName = "7.7"
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -42,7 +34,7 @@ android {
         }
     }
 }
-
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.louiscad.splitties:splitties-fun-pack-android-base-with-views-dsl:3.0.0")
 }

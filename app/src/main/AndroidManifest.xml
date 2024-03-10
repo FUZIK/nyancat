@@ -13,7 +13,7 @@
             android:theme="@style/Theme.MyCat"
             tools:targetApi="31">
         <activity
-                android:name=".MainActivity"
+                android:name=".SpacedNyash"
                 android:exported="true"
                 android:label="@string/app_name"
                 android:theme="@style/Theme.MyCat">
