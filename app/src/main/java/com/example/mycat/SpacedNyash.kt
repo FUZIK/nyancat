@@ -54,9 +54,7 @@ class SpacedNyash : Activity() {
                 }
             }, lParams(wrapContent, wrapContent, gravityTopCenter))
         }
-        nyanBass = MediaPlayer.create(applicationContext, R.raw.bee_nyancat).apply {
-            isLooping = true
-        }
+        nyanBass = NyanBassProvider.bass()
     }
 
     override fun onResume() {
@@ -67,13 +65,14 @@ class SpacedNyash : Activity() {
 
     override fun onPause() {
         nyanView.pause()
-        nyanBass?.run { if (isPlaying) pause() }
+        if (!isChangingConfigurations) {
+            nyanBass?.run { if (isPlaying) pause() }
+        }
         super.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        nyanBass?.release()
         timer.cancel()
     }
 }
