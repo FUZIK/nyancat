@@ -14,6 +14,7 @@ import splitties.views.backgroundColor
 import splitties.views.dsl.core.*
 import splitties.views.dsl.idepreview.UiPreView
 import java.util.*
+import kotlin.LazyThreadSafetyMode
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -131,6 +132,17 @@ class NyanSpaceView @JvmOverloads constructor(
                 PIXEL_DP, resources.displayMetrics
         ).toInt()
         private var smallPixelSize = pixelSize * 0.2f
+        private val pawBitmaps by lazy(LazyThreadSafetyMode.NONE) {
+                arrayOf(
+                        createPawBitmap(PAW_0_COLORED),
+                        createPawBitmap(PAW_1_COLORED),
+                        createPawBitmap(PAW_2_COLORED),
+                        createPawBitmap(PAW_3_COLORED),
+                        createPawBitmap(PAW_4_COLORED),
+                        createPawBitmap(PAW_5_COLORED)
+                )
+        }
+        private val nyanHeadBitmap by lazy(LazyThreadSafetyMode.NONE) { createNyanHeadBitmap() }
         private inline val Float.pxa: Float get() = this * pixelSize
         private inline val Int.pxa: Int get() = this * pixelSize
         private var weight = 0
@@ -392,60 +404,61 @@ class NyanSpaceView @JvmOverloads constructor(
         }
 
         private fun Canvas.drawPawSprite(frame: Int) {
-                fun getScaledBitmap(coloredMatrix: IntArray, width: Int, height: Int) =
-                        Bitmap.createBitmap(coloredMatrix, width, height, Bitmap.Config.ARGB_8888).run {
-                                scale(width.pxa, height.pxa, false)
-                        }
                 when (frame) {
-                        0 -> drawBitmap(getScaledBitmap(PAW_0_COLORED, 5, 5), 0f, 0f, aPaint)
-                        1 -> drawBitmap(getScaledBitmap(PAW_1_COLORED, 5, 5), 0f, 0f, aPaint)
-                        2 -> drawBitmap(getScaledBitmap(PAW_2_COLORED, 5, 5), 0f, 0f, aPaint)
-                        3 -> drawBitmap(getScaledBitmap(PAW_3_COLORED, 5, 5), 0f, 0f, aPaint)
-                        4 -> drawBitmap(getScaledBitmap(PAW_4_COLORED, 5, 5), 0f, 0f, aPaint)
-                        5 -> drawBitmap(getScaledBitmap(PAW_5_COLORED, 5, 5), 0f, 0f, aPaint)
+                        in 0..5 -> drawBitmap(pawBitmaps[frame], 0f, 0f, null)
                         6 -> withScale(-1f, 1f, 2f.pxa, 0f) { drawPawSprite(4) }
                 }
         }
 
+        private fun createPawBitmap(coloredMatrix: IntArray): Bitmap =
+                Bitmap.createBitmap(coloredMatrix, 5, 5, Bitmap.Config.ARGB_8888)
+                        .scale(5.pxa, 5.pxa, false)
+
         private fun Canvas.drawNyanHead() {
-                aPaint.apply { color = Color.BLACK }
+                drawBitmap(nyanHeadBitmap, 0f, 0f, null)
+        }
 
-                fun Canvas.drawFiftyHead() {
-                        withSave {
-                                translate(2f.pxa, 0f.pxa)
-                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                translate(2f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
+        private fun createNyanHeadBitmap(): Bitmap {
+                val paint = Paint()
+                val bitmap = Bitmap.createBitmap(headWeight.toInt(), headHeight.toInt(), Bitmap.Config.ARGB_8888)
+                bitmap.applyCanvas {
+                        paint.color = Color.BLACK
+
+                        fun Canvas.drawFiftyHead() {
+                                withSave {
+                                        translate(2f.pxa, 0f.pxa)
+                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, paint)
+                                        translate(2f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
+                                        translate(1f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
+                                        translate(1f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, paint)
+                                }
+                                withSave {
+                                        translate(1f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 1f.pxa, 4f.pxa, paint)
+                                        translate(-1f.pxa, 4f.pxa)
+                                        drawRect(0f, 0f, 1f.pxa, 5f.pxa, paint)
+                                        translate(1f.pxa, 5f.pxa)
+                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
+                                        translate(1f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
+                                        translate(1f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 6f.pxa, 1f.pxa, paint)
+                                }
                         }
-                        withSave {
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 4f.pxa, aPaint)
-                                translate(-1f.pxa, 4f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 5f.pxa, aPaint)
-                                translate(1f.pxa, 5f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 6f.pxa, 1f.pxa, aPaint)
+
+                        fun Canvas.drawEye() {
+                                paint.color = Color.WHITE
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
+                                paint.color = Color.BLACK
+                                translate(0f, 1f.pxa)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
+                                translate(1f.pxa, 0f)
+                                drawRect(0f, -1f.pxa, 1f.pxa, 1f.pxa, paint)
                         }
-                }
 
-                fun Canvas.drawEye() {
-                        aPaint.color = Color.WHITE
-                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                        aPaint.color = Color.BLACK
-                        translate(0f, 1f.pxa)
-                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                        translate(1f.pxa, 0f)
-                        drawRect(0f, -1f.pxa, 1f.pxa, 1f.pxa, aPaint)
-                }
-
-                Bitmap.createBitmap(headWeight.toInt(), headHeight.toInt(), Bitmap.Config.ARGB_8888).applyCanvas {
                         drawFiftyHead()
                         withScale(-1f, 1f, headWeight / 2, 0f) {
                                 drawFiftyHead()
@@ -455,36 +468,35 @@ class NyanSpaceView @JvmOverloads constructor(
                                 translate(4f.pxa, 6f.pxa)
                                 drawEye()
                                 translate(4f.pxa, 0f)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
                                 translate(2f.pxa, -1f.pxa)
                                 drawEye()
                         }
 
                         withSave {
-                                aPaint.color = NyanPallete.HEAD_CHEEK
+                                paint.color = NyanPallete.HEAD_CHEEK
                                 translate(2f.pxa, 8f.pxa)
-                                drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
+                                drawRect(0f, 0f, 2f.pxa, 2f.pxa, paint)
                                 translate(2f.pxa, 0f)
                                 translate(9f.pxa, 0f)
-                                drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
+                                drawRect(0f, 0f, 2f.pxa, 2f.pxa, paint)
                         }
 
                         withSave {
-                                aPaint.color = Color.BLACK
+                                paint.color = Color.BLACK
                                 translate(5f.pxa, 9f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
                                 translate(3f.pxa, 0f)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
                                 translate(3f.pxa, 0f)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, paint)
                                 translate(1f.pxa, 1f.pxa)
-                                drawRect(-7f.pxa, 0f, 0f, 1f.pxa, aPaint)
+                                drawRect(-7f.pxa, 0f, 0f, 1f.pxa, paint)
                         }
-                }.also { bitmap ->
-                        QueueLinearFloodFiller(bitmap, Color.TRANSPARENT, NyanPallete.GRAY)
-                                .floodFill(headWeight.toInt() / 2, headHeight.toInt() / 2)
-                        drawBitmap(bitmap, 0f, 0f, aPaint)
                 }
+                QueueLinearFloodFiller(bitmap, Color.TRANSPARENT, NyanPallete.GRAY)
+                        .floodFill(headWeight.toInt() / 2, headHeight.toInt() / 2)
+                return bitmap
         }
 
         private fun Canvas.drawNyanBody() {
