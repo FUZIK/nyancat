@@ -2,10 +2,13 @@ package com.example.mycat.nya
 
 import android.content.Context
 import android.graphics.*
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.BaseSavedState
 import androidx.core.graphics.*
 import com.example.mycat.QueueLinearFloodFiller
 import com.example.mycat.R
@@ -840,6 +843,47 @@ class NyanSpaceView @JvmOverloads constructor(
         fun pause() {
                 removeCallbacks(starTickerR)
                 removeCallbacks(rainbowTickerR)
+        }
+
+        override fun onSaveInstanceState(): Parcelable? {
+                return SavedState(super.onSaveInstanceState(), nyanCatPowderSprites)
+        }
+
+        override fun onRestoreInstanceState(state: Parcelable?) {
+                if (state is SavedState) {
+                        super.onRestoreInstanceState(state.superState)
+                        nyanCatPowderSprites.clear()
+                        nyanCatPowderSprites.addAll(state.powderRects.map(::Rect))
+                        invalidate()
+                } else {
+                        super.onRestoreInstanceState(state)
+                }
+        }
+
+        private class SavedState : BaseSavedState {
+                val powderRects: ArrayList<Rect>
+
+                constructor(superState: Parcelable?, powderRects: List<Rect>) : super(superState) {
+                        this.powderRects = ArrayList(powderRects.map(::Rect))
+                }
+
+                private constructor(parcel: Parcel) : super(parcel) {
+                        val restored = parcel.createTypedArrayList(Rect.CREATOR) ?: arrayListOf()
+                        powderRects = restored.mapTo(ArrayList(restored.size)) { Rect(it) }
+                }
+
+                override fun writeToParcel(out: Parcel, flags: Int) {
+                        super.writeToParcel(out, flags)
+                        out.writeTypedList(powderRects)
+                }
+
+                companion object {
+                        @JvmField
+                        val CREATOR = object : Parcelable.Creator<SavedState> {
+                                override fun createFromParcel(parcel: Parcel) = SavedState(parcel)
+                                override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+                        }
+                }
         }
 
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

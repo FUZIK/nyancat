@@ -31,7 +31,10 @@ class SpacedNyash : Activity() {
         contentView = frameLayout {
             backgroundColor = NyanPallete.SPACE
             add(
-                NyanSpaceView(this@SpacedNyash).also { nyanView = it },
+                NyanSpaceView(this@SpacedNyash).also {
+                    nyanView = it
+                    it.id = R.id.nyan_space_view
+                },
                 lParams(matchParent, matchParent)
             )
             add(textView {
