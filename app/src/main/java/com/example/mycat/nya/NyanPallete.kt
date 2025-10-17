@@ -33,4 +33,17 @@ object NyanPallete {
     const val BODY_POWDER = 0xFFFF3399.toInt()
     @ColorInt
     const val HEAD_CHEEK = 0xFFFF9999.toInt()
+    
+    @ColorInt
+    const val ROBOT_HARE_BODY = 0xFFB0B0B0.toInt()
+    @ColorInt
+    const val ROBOT_HARE_PANEL = 0xFF606060.toInt()
+    @ColorInt
+    const val ROBOT_HARE_BOLT = 0xFF404040.toInt()
+    @ColorInt
+    const val ROBOT_HARE_EYE = 0xFF00FF00.toInt()
+    @ColorInt
+    const val ROBOT_HARE_EAR_INNER = 0xFFFFAAAA.toInt()
+    @ColorInt
+    const val ROBOT_HARE_NOSE = 0xFFFF8080.toInt()
 }
