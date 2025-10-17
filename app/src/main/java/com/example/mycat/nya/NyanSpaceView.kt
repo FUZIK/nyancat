@@ -141,6 +141,14 @@ class NyanSpaceView @JvmOverloads constructor(
         private var isUserStarsEnabled = true
         private val linkedUserStars = LinkedList<NyanStar>()
         private var rainbowPaths: List<RainbowLine> = emptyList()
+        private val rainbowColorModes = listOf(
+                NyanPallete.RAINBOW_MODE_7_COLORS,
+                NyanPallete.RAINBOW_MODE_6_COLORS,
+                NyanPallete.RAINBOW_MODE_5_COLORS
+        )
+        private var rainbowModeIndex = 0
+        private val currentRainbowColors: IntArray
+                get() = rainbowColorModes[rainbowModeIndex]
         private var isRainbowToggledFrame = false
         private val hvostYOffset = 9f.pxa
         private val hvostXOffset = 6f.pxa
@@ -832,6 +840,65 @@ class NyanSpaceView @JvmOverloads constructor(
                         linkedUserStars.removeFirst()
         }
 
+        private fun updateRainbowPaths(colors: IntArray, shouldInvalidate: Boolean = true) {
+                if (weight <= 0 || height <= 0 || colors.isEmpty()) {
+                        return
+                }
+                rainbowSegmentWeight = pixelSize * RAINBOW_PIXEL_WEIGHT * 1f
+                rainbowDoubleSegmentHeight = pixelSize * RAINBOW_PIXEL_HEIGHT * 1f
+                rainbowDoubleSegmentWeight = rainbowSegmentWeight * 2f
+                rainbowDoubleSegments = weight / 2 / rainbowDoubleSegmentWeight.toInt()
+                rainbowWeight = rainbowDoubleSegmentWeight * rainbowDoubleSegments
+                rainbowHeight = rainbowDoubleSegmentHeight * colors.size
+                rainbowXOffset = -(rainbowSegmentWeight / 2)
+                rainbowYOffset = (height / 2f) - (rainbowHeight * 0.3f)
+                rainbowToggledFramePrivotX = (rainbowWeight / 2) + rainbowXOffset
+                nyanYOffset = rainbowYOffset - 1f.pxa
+                rainbowPaths = Path().apply {
+                        addRect(
+                                0f,
+                                pixelSize.toFloat(),
+                                rainbowSegmentWeight,
+                                rainbowDoubleSegmentHeight + pixelSize,
+                                Path.Direction.CCW
+                        )
+                        offset(rainbowSegmentWeight, 0f)
+                        addRect(0f, 0f, rainbowSegmentWeight, rainbowDoubleSegmentHeight, Path.Direction.CCW)
+                }.run {
+                        Path().apply {
+                                repeat(rainbowDoubleSegments) {
+                                        offset(rainbowDoubleSegmentWeight, 0f)
+                                        addPath(this@run)
+                                }
+                                offset(rainbowXOffset, rainbowYOffset)
+                        }
+                }.run {
+                        List(colors.size) { i ->
+                                Path(this@run).apply {
+                                        offset(
+                                                0f,
+                                                rainbowDoubleSegmentHeight * i
+                                        )
+                                } to colors[i]
+                        }
+                }
+                if (shouldInvalidate) {
+                        invalidate()
+                }
+        }
+
+        private fun isPointInRainbow(x: Float, y: Float): Boolean {
+                return x >= rainbowXOffset &&
+                        x <= rainbowXOffset + rainbowWeight &&
+                        y >= rainbowYOffset &&
+                        y <= rainbowYOffset + rainbowHeight
+        }
+
+        private fun cycleRainbowMode() {
+                rainbowModeIndex = (rainbowModeIndex + 1) % rainbowColorModes.size
+                updateRainbowPaths(currentRainbowColors)
+        }
+
         fun play() {
                 post(starTickerR)
                 post(rainbowTickerR)
@@ -863,56 +930,25 @@ class NyanSpaceView @JvmOverloads constructor(
                         return@run this
                 }
 
-                rainbowSegmentWeight = pixelSize * RAINBOW_PIXEL_WEIGHT * 1f
-                rainbowDoubleSegmentHeight = pixelSize * RAINBOW_PIXEL_HEIGHT * 1f
-                rainbowDoubleSegmentWeight = rainbowSegmentWeight * 2f
-                rainbowDoubleSegments = weight / 2 / rainbowDoubleSegmentWeight.toInt()
-                rainbowWeight = rainbowDoubleSegmentWeight * rainbowDoubleSegments
-                rainbowHeight = rainbowDoubleSegmentHeight * NyanPallete.LGBT_COLORS.size
-                rainbowXOffset = -(rainbowSegmentWeight / 2)
-                rainbowYOffset = (height / 2f) - (rainbowHeight * 0.3f)
-                rainbowToggledFramePrivotX = (rainbowWeight / 2) + rainbowXOffset
-                rainbowPaths = Path().apply {
-                        addRect(
-                                0f,
-                                pixelSize.toFloat(),
-                                rainbowSegmentWeight,
-                                rainbowDoubleSegmentHeight + pixelSize,
-                                Path.Direction.CCW
-                        )
-                        offset(rainbowSegmentWeight, 0f)
-                        addRect(0f, 0f, rainbowSegmentWeight, rainbowDoubleSegmentHeight, Path.Direction.CCW)
-                }.run {
-                        Path().apply {
-                                repeat(rainbowDoubleSegments) {
-                                        offset(rainbowDoubleSegmentWeight, 0f)
-                                        addPath(this@run)
-                                }
-                                offset(rainbowXOffset, rainbowYOffset)
-                        }
-                }.run {
-                        List(NyanPallete.LGBT_COLORS.size) { i ->
-                                Path(this@run).apply {
-                                        offset(
-                                                0f,
-                                                rainbowDoubleSegmentHeight * i
-                                        )
-                                } to NyanPallete.LGBT_COLORS[i]
-                        }
-                }
+                updateRainbowPaths(currentRainbowColors, shouldInvalidate = false)
 
                 nyanWeight = 20f.pxa
                 nyanXOffset = rainbowWeight - abs(rainbowXOffset) - 8f.pxa // - ~hvost
-                nyanYOffset = rainbowYOffset - 1f.pxa
         }
 
         override fun onTouchEvent(event: MotionEvent): Boolean {
-                if (isUserStarsEnabled && event.action == MotionEvent.ACTION_DOWN) {
-                        addUserStar(NyanStar(event.x - starSpriteHeight, event.y - starSpriteHeight / 2))
-                        invalidate()
-                        isUserStarsEnabled = false
-                        postDelayed({ isUserStarsEnabled = true }, STAR_ANIM_INTERVAL)
-                        return true
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                        if (isPointInRainbow(event.x, event.y)) {
+                                cycleRainbowMode()
+                                return true
+                        }
+                        if (isUserStarsEnabled) {
+                                addUserStar(NyanStar(event.x - starSpriteHeight, event.y - starSpriteHeight / 2))
+                                invalidate()
+                                isUserStarsEnabled = false
+                                postDelayed({ isUserStarsEnabled = true }, STAR_ANIM_INTERVAL)
+                                return true
+                        }
                 }
                 return super.onTouchEvent(event)
         }
