@@ -146,6 +146,7 @@ class NyanSpaceView @JvmOverloads constructor(
                 NyanPallete.RAINBOW_MODE_6_COLORS,
                 NyanPallete.RAINBOW_MODE_5_COLORS
         )
+        private val baseRainbowColorCount = NyanPallete.RAINBOW_MODE_6_COLORS.size
         private var rainbowModeIndex = 0
         private val currentRainbowColors: IntArray
                 get() = rainbowColorModes[rainbowModeIndex]
@@ -845,11 +846,13 @@ class NyanSpaceView @JvmOverloads constructor(
                         return
                 }
                 rainbowSegmentWeight = pixelSize * RAINBOW_PIXEL_WEIGHT * 1f
-                rainbowDoubleSegmentHeight = pixelSize * RAINBOW_PIXEL_HEIGHT * 1f
+                val baseDoubleSegmentHeight = pixelSize * RAINBOW_PIXEL_HEIGHT * 1f
+                val totalRainbowHeight = baseDoubleSegmentHeight * baseRainbowColorCount
+                rainbowDoubleSegmentHeight = totalRainbowHeight / colors.size
                 rainbowDoubleSegmentWeight = rainbowSegmentWeight * 2f
                 rainbowDoubleSegments = weight / 2 / rainbowDoubleSegmentWeight.toInt()
                 rainbowWeight = rainbowDoubleSegmentWeight * rainbowDoubleSegments
-                rainbowHeight = rainbowDoubleSegmentHeight * colors.size
+                rainbowHeight = totalRainbowHeight
                 rainbowXOffset = -(rainbowSegmentWeight / 2)
                 rainbowYOffset = (height / 2f) - (rainbowHeight * 0.3f)
                 rainbowToggledFramePrivotX = (rainbowWeight / 2) + rainbowXOffset
