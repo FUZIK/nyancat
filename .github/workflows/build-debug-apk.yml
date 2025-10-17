@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
     steps:
       - name: Checkout repository
@@ -20,19 +23,35 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platform-tools
-            platforms;android-34
-            build-tools;34.0.0
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      - name: Resolve sdkmanager path
+        id: sdkmanager
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/bin/sdkmanager"
+          fi
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "Unable to locate sdkmanager" >&2
+            exit 1
+          fi
+          echo "path=$SDKMANAGER" >> "$GITHUB_OUTPUT"
+
+      - name: Install Android SDK components
+        run: |
+          yes | "${{ steps.sdkmanager.outputs.path }}" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Accept Android SDK licenses
+        run: yes | "${{ steps.sdkmanager.outputs.path }}" --licenses || true
+
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
