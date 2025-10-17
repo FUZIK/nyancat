@@ -2,13 +2,16 @@ package com.example.mycat.nya
 
 import android.content.Context
 import android.graphics.*
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.BaseSavedState
 import androidx.core.graphics.*
 import com.example.mycat.QueueLinearFloodFiller
 import com.example.mycat.R
+import kotlinx.parcelize.Parcelize
 import splitties.experimental.InternalSplittiesApi
 import splitties.views.backgroundColor
 import splitties.views.dsl.core.*
@@ -840,6 +843,30 @@ class NyanSpaceView @JvmOverloads constructor(
         fun pause() {
                 removeCallbacks(starTickerR)
                 removeCallbacks(rainbowTickerR)
+        }
+
+        override fun onSaveInstanceState(): Parcelable? {
+                return SavedState(super.onSaveInstanceState(), nyanCatPowderSprites)
+        }
+
+        override fun onRestoreInstanceState(state: Parcelable?) {
+                if (state is SavedState) {
+                        super.onRestoreInstanceState(state.superSavedState)
+                        nyanCatPowderSprites.clear()
+                        nyanCatPowderSprites.addAll(state.powderRects.map(::Rect))
+                        invalidate()
+                } else {
+                        super.onRestoreInstanceState(state)
+                }
+        }
+
+        @Parcelize
+        private class SavedState(
+                val powderRects: ArrayList<Rect>,
+                val superSavedState: Parcelable?
+        ) : BaseSavedState(superSavedState) {
+                constructor(superState: Parcelable?, powderRects: List<Rect>) :
+                        this(ArrayList(powderRects.map(::Rect)), superState)
         }
 
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
