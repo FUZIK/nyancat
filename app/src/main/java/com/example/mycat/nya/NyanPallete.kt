@@ -23,6 +23,34 @@ object NyanPallete {
         Color.BLUE,
         0xFF6633FF.toInt()
     )
+    
+    val RAINBOW_MODE_7_COLORS = intArrayOf(
+        0xFFFF0000.toInt(),
+        0xFFFF7F00.toInt(),
+        0xFFFFFF00.toInt(),
+        0xFF00FF00.toInt(),
+        0xFF00FFFF.toInt(),
+        0xFF0000FF.toInt(),
+        0xFF8B00FF.toInt()
+    )
+    
+    val RAINBOW_MODE_6_COLORS = intArrayOf(
+        0xFFFF0000.toInt(),
+        0xFFFF7F00.toInt(),
+        0xFFFFFF00.toInt(),
+        0xFF00FF00.toInt(),
+        0xFF0000FF.toInt(),
+        0xFF8B00FF.toInt()
+    )
+    
+    val RAINBOW_MODE_5_COLORS = intArrayOf(
+        0xFFFF0000.toInt(),
+        0xFFFFFF00.toInt(),
+        0xFF00FF00.toInt(),
+        0xFF87CEEB.toInt(),
+        0xFF8B00FF.toInt()
+    )
+    
     @ColorInt
     const val GRAY = 0xFF999999.toInt()
     @ColorInt
