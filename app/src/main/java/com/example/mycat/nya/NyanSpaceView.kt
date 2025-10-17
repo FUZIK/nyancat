@@ -407,88 +407,79 @@ class NyanSpaceView @JvmOverloads constructor(
                 }
         }
 
-        private fun Canvas.drawNyanHead() {
+        private fun Canvas.drawRobotHareHead() {
                 aPaint.apply { color = Color.BLACK }
 
-                fun Canvas.drawFiftyHead() {
-                        withSave {
-                                translate(2f.pxa, 0f.pxa)
-                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                translate(2f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                        }
-                        withSave {
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 4f.pxa, aPaint)
-                                translate(-1f.pxa, 4f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 5f.pxa, aPaint)
-                                translate(1f.pxa, 5f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(1f.pxa, 1f.pxa)
-                                drawRect(0f, 0f, 6f.pxa, 1f.pxa, aPaint)
-                        }
+                fun Canvas.drawEar() {
+                        aPaint.color = Color.BLACK
+                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
+                        translate(0f, 1f.pxa)
+                        drawRect(0f, 0f, 1f.pxa, 6f.pxa, aPaint)
+                        translate(1f.pxa, 0f)
+                        drawRect(0f, 0f, 1f.pxa, 6f.pxa, aPaint)
+                        translate(1f.pxa, 0f)
+                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                        aPaint.color = NyanPallete.ROBOT_HARE_EAR_INNER
+                        translate(-1f.pxa, 2f.pxa)
+                        drawRect(0f, 0f, 1f.pxa, 3f.pxa, aPaint)
                 }
 
-                fun Canvas.drawEye() {
-                        aPaint.color = Color.WHITE
-                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                fun Canvas.drawRobotEye() {
+                        aPaint.color = NyanPallete.ROBOT_HARE_EYE
+                        drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
                         aPaint.color = Color.BLACK
-                        translate(0f, 1f.pxa)
+                        translate(0.5f.pxa, 0.5f.pxa)
                         drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                        translate(1f.pxa, 0f)
-                        drawRect(0f, -1f.pxa, 1f.pxa, 1f.pxa, aPaint)
                 }
 
                 Bitmap.createBitmap(headWeight.toInt(), headHeight.toInt(), Bitmap.Config.ARGB_8888).applyCanvas {
-                        drawFiftyHead()
-                        withScale(-1f, 1f, headWeight / 2, 0f) {
-                                drawFiftyHead()
-                        }
-
                         withSave {
-                                translate(4f.pxa, 6f.pxa)
-                                drawEye()
-                                translate(4f.pxa, 0f)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(2f.pxa, -1f.pxa)
-                                drawEye()
-                        }
-
-                        withSave {
-                                aPaint.color = NyanPallete.HEAD_CHEEK
-                                translate(2f.pxa, 8f.pxa)
-                                drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
-                                translate(2f.pxa, 0f)
-                                translate(9f.pxa, 0f)
-                                drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
-                        }
-
-                        withSave {
-                                aPaint.color = Color.BLACK
-                                translate(5f.pxa, 9f.pxa)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(3f.pxa, 0f)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                translate(3f.pxa, 0f)
-                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
                                 translate(1f.pxa, 1f.pxa)
-                                drawRect(-7f.pxa, 0f, 0f, 1f.pxa, aPaint)
+                                drawEar()
+                        }
+                        withSave {
+                                translate(13f.pxa, 1f.pxa)
+                                drawEar()
+                        }
+                        
+                        aPaint.color = Color.BLACK
+                        withSave {
+                                translate(3f.pxa, 7f.pxa)
+                                drawRect(0f, 0f, 10f.pxa, 1f.pxa, aPaint)
+                                translate(0f, 1f.pxa)
+                                drawRect(0f, 0f, 1f.pxa, 4f.pxa, aPaint)
+                                translate(9f.pxa, 0f)
+                                drawRect(0f, 0f, 1f.pxa, 4f.pxa, aPaint)
+                                translate(-9f.pxa, 4f.pxa)
+                                drawRect(0f, 0f, 10f.pxa, 1f.pxa, aPaint)
+                        }
+
+                        withSave {
+                                translate(4f.pxa, 8f.pxa)
+                                drawRobotEye()
+                                translate(4f.pxa, 0f)
+                                drawRobotEye()
+                        }
+
+                        withSave {
+                                aPaint.color = NyanPallete.ROBOT_HARE_NOSE
+                                translate(7f.pxa, 10f.pxa)
+                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
+                                aPaint.color = Color.BLACK
+                                translate(0f, 1f.pxa)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                                translate(1f.pxa, 0f)
+                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
                         }
                 }.also { bitmap ->
-                        QueueLinearFloodFiller(bitmap, Color.TRANSPARENT, NyanPallete.GRAY)
+                        QueueLinearFloodFiller(bitmap, Color.TRANSPARENT, NyanPallete.ROBOT_HARE_BODY)
                                 .floodFill(headWeight.toInt() / 2, headHeight.toInt() / 2)
                         drawBitmap(bitmap, 0f, 0f, aPaint)
                 }
         }
 
-        private fun Canvas.drawNyanBody() {
-                aPaint.color = NyanPallete.BODY
+        private fun Canvas.drawRobotHareBody() {
+                aPaint.color = NyanPallete.ROBOT_HARE_BODY
                 withSave {
                         translate(1f.pxa, 1f.pxa)
                         drawRect(0f, 0f, bodyweight, bodyheight, aPaint)
@@ -524,148 +515,64 @@ class NyanSpaceView @JvmOverloads constructor(
                         translate(0f, bodyheight)
                         drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
                 }
-                aPaint.color = NyanPallete.BODY_FILL
+                
+                aPaint.color = NyanPallete.ROBOT_HARE_PANEL
                 withSave {
                         translate(2f.pxa, 2f.pxa)
                         drawRect(2f.pxa, 0f, innerbodyweight - 2f.pxa, innerbodyheight, aPaint)
                         drawRect(0f, 2f.pxa, innerbodyweight, innerbodyheight - 2f.pxa, aPaint)
                         drawRect(1f.pxa, 1f.pxa, innerbodyweight - 1f.pxa, innerbodyheight - 1f.pxa, aPaint)
-                        aPaint.color = NyanPallete.BODY_POWDER
-                        nyanCatPowderSprites.forEach { drawRect(it, aPaint) }
+                        
+                        aPaint.color = NyanPallete.ROBOT_HARE_BOLT
+                        translate(3f.pxa, 3f.pxa)
+                        drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
+                        translate(innerbodyweight - 8f.pxa, 0f)
+                        drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
+                        translate(0f, innerbodyheight - 8f.pxa)
+                        drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
+                        translate(-innerbodyweight + 8f.pxa, 0f)
+                        drawRect(0f, 0f, 2f.pxa, 2f.pxa, aPaint)
+                        
+                        aPaint.color = Color.BLACK
+                        translate(innerbodyweight / 2 - 4f.pxa, -innerbodyheight / 2)
+                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                        translate(2f.pxa, 0f)
+                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                        translate(2f.pxa, 0f)
+                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
                 }
         }
 
-        private fun Canvas.drawHvostSprite(frame: Int) {
+        private fun Canvas.drawHareTailSprite(frame: Int) {
                 aPaint.color = Color.BLACK
                 when (frame) {
-                        0 -> {
+                        0, 2, 4 -> {
                                 withSave {
-                                        aPaint.color = NyanPallete.GRAY
-                                        withSave {
-                                                repeat(4) {
-                                                        translate(1f.pxa, 1f.pxa)
-                                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                                }
-                                        }
+                                        aPaint.color = Color.WHITE
+                                        translate(1f.pxa, 2f.pxa)
+                                        drawRect(0f, 0f, 3f.pxa, 3f.pxa, aPaint)
                                         aPaint.color = Color.BLACK
-                                        drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
-                                        withSave {
-                                                translate(0f, 1f.pxa)
-                                                repeat(4) {
-                                                        drawRect(0f, 0f, 1f.pxa, 2f.pxa, aPaint)
-                                                        translate(1f.pxa, 1f.pxa)
-                                                }
-                                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                                translate(1f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                        }
-                                        translate(3f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                        translate(1f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                        translate(1f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                }
-                        }
-
-                        1 -> {
-                                withSave {
-                                        aPaint.color = NyanPallete.GRAY
-                                        withSave {
-                                                translate(1f.pxa, 2f.pxa)
-                                                drawRect(cubeForHvostSprite1, aPaint)
-                                                translate(1f.pxa, 2f.pxa)
-                                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                                translate(2f.pxa, 0f)
-                                                drawRect(cubeForHvostSprite1, aPaint)
-                                        }
-                                        aPaint.color = Color.BLACK
-                                        translate(0f, 1f.pxa)
-                                        withSave {
-                                                translate(0f, 1f.pxa)
-                                                drawRect(0f, 0f, 1f.pxa, 2f.pxa, aPaint)
-                                                translate(1f.pxa, 2f.pxa)
-                                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                                translate(1f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                                translate(2f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                        }
-                                        translate(1f.pxa, 0f)
-                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                        translate(2f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 1f.pxa, 2f.pxa, aPaint)
-                                        translate(1f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                }
-                        }
-
-                        2 -> {
-                                withSave {
-                                        aPaint.color = NyanPallete.GRAY
-                                        withSave {
-                                                translate(2f.pxa, 5f.pxa)
-                                                drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
-                                                translate(-1f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 3f.pxa, 1f.pxa, aPaint)
-                                        }
-                                        aPaint.color = Color.BLACK
-                                        translate(0f, 3f.pxa)
-                                        withSave {
-                                                translate(0f, 2f.pxa)
-                                                drawRect(0f, 0f, 1f.pxa, 2f.pxa, aPaint)
-                                                translate(1f.pxa, 2f.pxa)
-                                                drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
-                                                translate(3f.pxa, -1f.pxa)
-                                                drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
-                                        }
-                                        translate(5f.pxa, 0f)
-                                        drawRect(0f, 0f, 1f.pxa, 2f.pxa, aPaint)
-                                        translate(-3f.pxa, 1f.pxa)
                                         drawRect(0f, 0f, 3f.pxa, 1f.pxa, aPaint)
-                                        translate(-1f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
+                                        drawRect(0f, 0f, 1f.pxa, 3f.pxa, aPaint)
+                                        translate(2f.pxa, 0f)
+                                        drawRect(0f, 0f, 1f.pxa, 3f.pxa, aPaint)
+                                        translate(-2f.pxa, 2f.pxa)
+                                        drawRect(0f, 0f, 3f.pxa, 1f.pxa, aPaint)
                                 }
                         }
 
-                        3 -> {
+                        1, 3 -> {
                                 withSave {
-                                        translate(0f, 4f.pxa)
-                                        withScale(1f, -1f, 0f, hvostHeight / 2) {
-                                                drawHvostSprite(1)
-                                        }
-                                }
-                        }
-
-                        4 -> {
-                                withSave {
-                                        aPaint.color = NyanPallete.GRAY
-                                        withSave {
-                                                translate(1f.pxa, 2f.pxa)
-                                                drawRect(0f, 0f, 3f.pxa, 1f.pxa, aPaint)
-                                                translate(1f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
-                                                translate(4f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                        }
+                                        aPaint.color = Color.WHITE
+                                        translate(1f.pxa, 1f.pxa)
+                                        drawRect(0f, 0f, 4f.pxa, 4f.pxa, aPaint)
                                         aPaint.color = Color.BLACK
-                                        translate(0f, 1f.pxa)
-                                        withSave {
-                                                translate(1f.pxa, 0f)
-                                                drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
-                                                translate(3f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 3f.pxa, 1f.pxa, aPaint)
-                                                translate(2f.pxa, 1f.pxa)
-                                                drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                        }
-                                        translate(0f, 1f.pxa)
-                                        drawRect(0f, 0f, 1f.pxa, 2f.pxa, aPaint)
-                                        translate(1f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 1f.pxa, 1f.pxa, aPaint)
-                                        translate(1f.pxa, 1f.pxa)
                                         drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
-                                        translate(3f.pxa, 1f.pxa)
-                                        drawRect(0f, 0f, 2f.pxa, 1f.pxa, aPaint)
+                                        drawRect(0f, 0f, 1f.pxa, 4f.pxa, aPaint)
+                                        translate(3f.pxa, 0f)
+                                        drawRect(0f, 0f, 1f.pxa, 4f.pxa, aPaint)
+                                        translate(-3f.pxa, 3f.pxa)
+                                        drawRect(0f, 0f, 4f.pxa, 1f.pxa, aPaint)
                                 }
                         }
                 }
@@ -759,15 +666,15 @@ class NyanSpaceView @JvmOverloads constructor(
                 }
         }
 
-        private fun Canvas.compositeDrawNyanSprite(
+        private fun Canvas.compositeDrawRobotHareSprite(
                 bX: Float, bY: Float,
                 hX: Float, hY: Float,
-                hvostFrame: Int,
+                tailFrame: Int,
                 pawPair: Int = 0
         ) {
                 withSave {
                         translate(0f, hvostYOffset)
-                        drawHvostSprite(hvostFrame)
+                        drawHareTailSprite(tailFrame)
                 }
                 withSave {
                         translate(0f, bY)
@@ -775,23 +682,23 @@ class NyanSpaceView @JvmOverloads constructor(
                 }
                 withSave {
                         translate(hvostXOffset + bX, 0f + bY)
-                        drawNyanBody()
+                        drawRobotHareBody()
                 }
                 withSave {
                         translate(hvostXOffset + bX, 0f)
                         translate(12f.pxa + hX, 7f.pxa + hY)
-                        drawNyanHead()
+                        drawRobotHareHead()
                 }
         }
 
-        private fun Canvas.drawNyanSprite(frame: Int) {
+        private fun Canvas.drawRobotHareSprite(frame: Int) {
                 when (frame) {
-                        0 -> compositeDrawNyanSprite(0f, 0f, 0f, 0f, 0, 0)
-                        1 -> compositeDrawNyanSprite(0f, 0f, 1f.pxa, 0f, 1, 1)
-                        2 -> compositeDrawNyanSprite(0f, 1f.pxa, 1f.pxa, 1f.pxa, 2, 2)
-                        3 -> compositeDrawNyanSprite(0f, 1f.pxa, 1f.pxa, 1f.pxa, 3, 1)
-                        4 -> compositeDrawNyanSprite(0f, 1f.pxa, 0f, 1f.pxa, 4, 3)
-                        5 -> compositeDrawNyanSprite(0f, 1f.pxa, 0f, -0.2f.pxa, 1, 4)
+                        0 -> compositeDrawRobotHareSprite(0f, 0f, 0f, 0f, 0, 0)
+                        1 -> compositeDrawRobotHareSprite(0f, 0f, 1f.pxa, 0f, 1, 1)
+                        2 -> compositeDrawRobotHareSprite(0f, 1f.pxa, 1f.pxa, 1f.pxa, 2, 2)
+                        3 -> compositeDrawRobotHareSprite(0f, 1f.pxa, 1f.pxa, 1f.pxa, 3, 1)
+                        4 -> compositeDrawRobotHareSprite(0f, 1f.pxa, 0f, 1f.pxa, 4, 3)
+                        5 -> compositeDrawRobotHareSprite(0f, 1f.pxa, 0f, -0.2f.pxa, 1, 4)
                 }
         }
 
@@ -920,7 +827,7 @@ class NyanSpaceView @JvmOverloads constructor(
         override fun onDraw(canvas: Canvas) {
                 super.onDraw(canvas)
 
-//                println("NyanView onDraw")
+//                println("RobotHareView onDraw")
 //                canvas.withSave { // лапки
 //                        repeat(7) {
 //                                canvas.drawPawSprite(it)
@@ -929,7 +836,7 @@ class NyanSpaceView @JvmOverloads constructor(
 //                }
 //                canvas.withSave { // хвосты
 //                        repeat(5) {
-//                                canvas.drawHvostSprite(it)
+//                                canvas.drawHareTailSprite(it)
 //                                canvas.translate(9f.pxa, 0f)
 //                        }
 //                }
@@ -954,7 +861,7 @@ class NyanSpaceView @JvmOverloads constructor(
 
                 canvas.withSave {
                         translate(nyanXOffset, nyanYOffset)
-                        canvas.drawNyanSprite(curNyanSprite)
+                        canvas.drawRobotHareSprite(curNyanSprite)
                 }
         }
 }
