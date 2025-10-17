@@ -1,0 +1,129 @@
+name: Build Debug APK
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Resolve sdkmanager path
+        id: sdkmanager
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/bin/sdkmanager"
+          fi
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "Unable to locate sdkmanager" >&2
+            exit 1
+          fi
+          echo "path=$SDKMANAGER" >> "$GITHUB_OUTPUT"
+
+      - name: Install Android SDK components
+        run: |
+          yes | "${{ steps.sdkmanager.outputs.path }}" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Accept Android SDK licenses
+        run: yes | "${{ steps.sdkmanager.outputs.path }}" --licenses || true
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Locate debug APK
+        id: locate_apk
+        run: |
+          set -euo pipefail
+          APK_PATH=$(find app/build/outputs/apk/debug -maxdepth 1 -name "*.apk" -print | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "No APK found" >&2
+            exit 1
+          fi
+          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$(basename "$APK_PATH")" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare APK artifact
+        id: prepare_apk
+        run: |
+          set -euo pipefail
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          SOURCE_REF="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SOURCE_REF="${{ github.event.pull_request.head.ref }}"
+          fi
+          BRANCH_SLUG=$(echo "$SOURCE_REF" | tr '/' '-')
+          mkdir -p artifacts
+          TARGET_PATH="artifacts/app-debug-${BRANCH_SLUG}-${SHORT_SHA}.apk"
+          cp "${{ steps.locate_apk.outputs.apk_path }}" "$TARGET_PATH"
+          echo "artifact_path=$TARGET_PATH" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$(basename "$TARGET_PATH")" >> "$GITHUB_OUTPUT"
+          echo "branch_slug=$BRANCH_SLUG" >> "$GITHUB_OUTPUT"
+
+      - name: Upload debug APK artifact
+        id: upload_apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.prepare_apk.outputs.artifact_name }}
+          path: ${{ steps.prepare_apk.outputs.artifact_path }}
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Publish APK as release asset
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: debug-${{ steps.prepare_apk.outputs.branch_slug }}
+          name: Debug build - ${{ github.ref_name }}
+          body: |
+            ### Debug build information
+            - Branch: `${{ github.ref_name }}`
+            - Commit: `${{ github.sha }}`
+            - Run: `${{ github.run_number }}`
+          files: ${{ steps.prepare_apk.outputs.artifact_path }}
+          draft: false
+          prerelease: true
+          make_latest: false
+          overwrite: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add download links to summary
+        env:
+          APK_NAME: ${{ steps.prepare_apk.outputs.artifact_name }}
+          ARTIFACT_URL: ${{ steps.upload_apk.outputs['artifact-url'] }}
+          RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/debug-${{ steps.prepare_apk.outputs.branch_slug }}
+          EVENT_NAME: ${{ github.event_name }}
+          IS_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
+        run: |
+          echo "## 📱 Debug APK" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [${APK_NAME}](${ARTIFACT_URL})" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$EVENT_NAME" = "push" ] || { [ "$EVENT_NAME" = "pull_request" ] && [ "$IS_FORK_PR" != "true" ]; }; then
+            echo "- [Direct APK (release asset)](${RELEASE_URL})" >> "$GITHUB_STEP_SUMMARY"
+          fi
